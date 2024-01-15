@@ -11,8 +11,8 @@ convert_txt_NHR_table <- function(flat_txt) {
       id_specs    <- tail(which(grepl('^2.3 specificaties variabelen',tolower(flat_txt))),1)
       id_descript <- which(flat_txt=='2.4 Casuïstiek') # When next paragraph isn't the description of datasets (PCI).
     } else {
-      id_overview <- tail(which(str_detect(tolower(flat_txt), '(?=.*overzicht)(?=.*variabelen)')),1)
-      id_specs    <- tail(which(str_detect(tolower(flat_txt), '(?=.*specificaties)(?=.*variabelen)')),1)
+      id_overview <- tail(which(str_detect(tolower(flat_txt), '(?=.*overzicht)(?=.*variabelen$)')),1)
+      id_specs    <- tail(which(str_detect(tolower(flat_txt), '(?=.*specificaties)(?=.*variabelen$)')),1)
       id_descript <- which(flat_txt=='3. Beschrijving datasets')
     }
   
