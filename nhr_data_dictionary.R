@@ -25,7 +25,8 @@
     library(dplyr)
     library(tidyr)
     library(zoo)
-    
+    library(diffdf)
+    library(data.table)
   
   # ------------------------------------------------------
   # Set options
@@ -33,7 +34,6 @@
   
     # set options
     options(stringsAsFactors = FALSE)
-    setwd('/R/NHR data dictionary')
   
   # ------------------------------------------------------
   # Load helper scripts
@@ -41,6 +41,7 @@
   
     source("Scripts/convert_pdf_txt.R")
     source("Scripts/convert_txt_NHR_table.R")
+    source("Scripts/compare_handbooks.R")
   
   
 # ------------------------------------------------------------------------------------------------------------------------ #
@@ -50,11 +51,11 @@
   
   # Read NHR handbook from pdf to txt
     path  <- 'Handbooks/'
-    files <- list.files(path)
+    files <- list.files(path,'*.pdf')
     
     data_dict <- c()
     for (filename in files) {
-      
+
       flat_txt  <- convert_pdf_txt(paste0(path,filename))
       data      <- convert_txt_NHR_table(flat_txt)
       
@@ -80,6 +81,16 @@
                select(-c(`Zorg Informatie`,`Bouwsteen (ZIB)`)) %>%
                select(handbook:Opmerkingen, `Zorg informatie bouwsteen (ZIB)`, Bron)
 
+# ------------------------------------------------------------------------------------------------------------------------ #
+#                                                       Check updates                                                      #
+# ------------------------------------------------------------------------------------------------------------------------ #
+  
+  #Check changes made in new handbooks
+  data_dict %>% select(handbook,version) %>% distinct() %>% arrange(handbook,version)
+  diff_df <- compare_handbooks(data_dict %>% filter(str_detect(handbook,'ICD') & version == 'versie 22.2.1'),
+                               data_dict %>% filter(str_detect(handbook,'ICD') & version == 'versie 25.1.0'),
+                               filename = 'COMPARE_PM_ICD_v22_and_v25')
+  # check reading of pm_icd_v25
   
 # ------------------------------------------------------------------------------------------------------------------------ #
 #                                                    Save data dictionary                                                  #
